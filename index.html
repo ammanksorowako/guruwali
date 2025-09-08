@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Guru Wali</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+        /* Animasi fade in */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        /* Loader */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div id="app" class="max-w-md mx-auto bg-white min-h-screen shadow-lg">
+
+        <!-- 1. Layar Selamat Datang -->
+        <div id="welcome-screen" class="screen active min-h-screen flex flex-col justify-center items-center p-8 text-center fade-in">
+            <div class="flex justify-center items-center space-x-3 sm:space-x-4 mb-8">
+                <img src="https://i.imgur.com/WQdSRHk.png" alt="Logo YPS" class="h-10 sm:h-12 w-auto">
+                <img src="https://i.imgur.com/I9jMRJ7.png" alt="Logo Google Reference School" class="h-10 sm:h-12 w-auto">
+                <img src="https://i.imgur.com/X60GRXo.png" alt="Logo Cambridge" class="h-10 sm:h-12 w-auto">
+            </div>
+            <div class="space-y-4">
+                <h1 class="text-3xl font-bold text-gray-900">Selamat Datang</h1>
+                <p class="text-lg text-gray-600">Aplikasi Guru Wali</p>
+                <img src="https://i.imgur.com/pLPTWkW.png" alt="Foto Profil" class="w-32 h-32 mx-auto rounded-full object-cover border-4 border-white shadow-lg mb-4">
+                <p class="text-md font-semibold text-blue-600">Abdul Rahman, S.Pd., M.Pd., MCE, CCT</p>
+            </div>
+            <button onclick="showScreen('home-screen')" class="mt-12 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-blue-500/40 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Mulai
+            </button>
+        </div>
+
+        <!-- 2. Layar Home / Menu Utama -->
+        <div id="home-screen" class="screen p-6">
+            <header class="text-center mb-8">
+                <h2 class="text-2xl font-bold">Menu Utama</h2>
+                <p class="text-gray-500">Pilih menu di bawah ini</p>
+            </header>
+            <div class="space-y-4">
+                <button onclick="showDaftarSiswa()" class="w-full bg-white text-blue-700 font-semibold py-4 px-6 rounded-xl border-2 border-blue-500 hover:bg-blue-50 hover:border-blue-600 transition-all duration-300 transform hover:scale-[1.02] text-left flex justify-between items-center shadow-sm">
+                    <span>Daftar Siswa Bimbingan</span>
+                    <span>&rarr;</span>
+                </button>
+                <button onclick="showScreen('bimbingan-form-screen')" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-4 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] text-left flex justify-between items-center">
+                    <span>Mulai Bimbingan</span>
+                    <span>&rarr;</span>
+                </button>
+                <button onclick="loadDataBimbingan()" class="w-full bg-white text-blue-700 font-semibold py-4 px-6 rounded-xl border-2 border-blue-500 hover:bg-blue-50 hover:border-blue-600 transition-all duration-300 transform hover:scale-[1.02] text-left flex justify-between items-center shadow-sm">
+                    <span>Data Bimbingan</span>
+                    <span>&rarr;</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 3. Layar Form Bimbingan -->
+        <div id="bimbingan-form-screen" class="screen p-6">
+            <header class="flex items-center mb-6">
+                <button onclick="showScreen('home-screen')" class="p-2 mr-2 rounded-full hover:bg-gray-200">&larr;</button>
+                <h2 class="text-2xl font-bold">Form Input Bimbingan</h2>
+            </header>
+            <form id="guidance-form" class="space-y-5">
+                <div>
+                    <label for="tanggal" class="block text-sm font-semibold text-gray-600">Tanggal</label>
+                    <input type="text" id="tanggal" name="tanggal" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm">
+                </div>
+                <div>
+                    <label for="jam" class="block text-sm font-semibold text-gray-600">Jam</label>
+                    <input type="text" id="jam" name="jam" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm">
+                </div>
+                <div>
+                    <label for="namaSiswa" class="block text-sm font-semibold text-gray-600">Nama Siswa</label>
+                    <select id="namaSiswa" name="namaSiswa" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition">
+                        <option value="">-- Pilih Siswa --</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="jenisBimbingan" class="block text-sm font-semibold text-gray-600">Jenis Bimbingan</label>
+                    <select id="jenisBimbingan" name="jenisBimbingan" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition">
+                        <option>Pendampingan Akademik</option>
+                        <option>Pengembangan Kompetensi & Keterampilan</option>
+                        <option>Pembentukan Karakter</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="catatan" class="block text-sm font-semibold text-gray-600">Catatan</label>
+                    <textarea id="catatan" name="catatan" rows="3" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition"></textarea>
+                </div>
+                <div>
+                    <label for="statusBimbingan" class="block text-sm font-semibold text-gray-600">Status Bimbingan</label>
+                    <select id="statusBimbingan" name="statusBimbingan" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition">
+                        <option>Baik</option>
+                        <option>Perlu Perhatian</option>
+                        <option>Butuh Bantuan</option>
+                    </select>
+                </div>
+                 <div>
+                    <label for="tindakLanjut" class="block text-sm font-semibold text-gray-600">Tindak Lanjut</label>
+                    <textarea id="tindakLanjut" name="tindakLanjut" rows="3" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-green-500/40 hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:-translate-y-1 active:scale-95">
+                    Kirim Data
+                </button>
+            </form>
+        </div>
+
+        <!-- 4. Layar Data Bimbingan -->
+        <div id="data-bimbingan-screen" class="screen p-6">
+             <header class="flex items-center mb-6">
+                <button onclick="showScreen('home-screen')" class="p-2 mr-2 rounded-full hover:bg-gray-200">&larr;</button>
+                <h2 class="text-2xl font-bold">Data Bimbingan</h2>
+            </header>
+            <div class="mb-4">
+                <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Cari nama siswa..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+            </div>
+            <div id="data-container" class="space-y-3">
+                <!-- Data akan dimuat di sini -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal/Popup -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 hidden">
+        <div id="modal-content" class="bg-white p-6 rounded-lg shadow-xl text-center max-w-sm w-full mx-4">
+            <!-- Konten modal akan diisi oleh JavaScript -->
+        </div>
+    </div>
+
+
+    <script>
+        // === KONFIGURASI ===
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzo7eL0Vil3Ztik4qwlvlmEOjn03vlfD6nKjtjH69wJCBikifXcpSB2KO1zAu32wuG-LA/exec';
+        const DAFTAR_SISWA = [
+            "Dafi Dhiyaurrahman Enreina", "Arganta Alvaro Popang", "William Benaiah Manti Ritto",
+            "Ozil Syahdan", "Muh. Raffa Putra Jatan", "Firmansyah Sabir", "Febriano",
+            "Brayn Lionel Trisagi", "Arkan Aqila Pratama", "Siti Safira Ramadhani",
+            "Muhammad Rafie Abqary", "Justin Marcello Randan", "Chanya Felicia Tandi",
+            "Amelia Putri Mangando", "Qitarah Putri Heriansa Mude", "Okriene Kristin Gramelia",
+            "Leonard William Herfly", "Fatiima Nurhalimah Jufri", "Gadiza Khayra Fatisha"
+        ];
+        
+        let allBimbinganData = []; // Variabel untuk menyimpan semua data bimbingan
+
+        // === FUNGSI NAVIGASI ===
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active', 'fade-in');
+            });
+            const activeScreen = document.getElementById(screenId);
+            activeScreen.classList.add('active');
+            // Tambahkan animasi setelah layar aktif
+            setTimeout(() => activeScreen.classList.add('fade-in'), 10);
+        }
+
+        // === FUNGSI MODAL (POPUP) ===
+        const modal = document.getElementById('modal');
+        const modalContent = document.getElementById('modal-content');
+
+        function showModal(title, message, type = 'info') {
+            let bgColor = 'bg-blue-100';
+            let textColor = 'text-blue-800';
+            let buttonColor = 'bg-blue-600';
+            if (type === 'success') {
+                bgColor = 'bg-green-100'; textColor = 'text-green-800'; buttonColor = 'bg-green-600';
+            } else if (type === 'error') {
+                bgColor = 'bg-red-100'; textColor = 'text-red-800'; buttonColor = 'bg-red-600';
+            }
+
+            modalContent.innerHTML = `
+                <div class="${bgColor} p-4 rounded-lg text-left">
+                    <h3 class="text-lg font-bold ${textColor} text-center">${title}</h3>
+                    <div class="mt-2 text-sm text-gray-700 max-h-[60vh] overflow-y-auto pr-2">${message}</div>
+                </div>
+                <button onclick="hideModal()" class="mt-4 w-full ${buttonColor} text-white font-bold py-2 px-4 rounded-lg">Tutup</button>
+            `;
+            modal.classList.remove('hidden');
+        }
+        
+        function showLoadingModal() {
+            modalContent.innerHTML = `
+                <div class="flex flex-col items-center justify-center p-4">
+                    <div class="loader mb-4"></div>
+                    <p class="text-gray-700">Harap tunggu...</p>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function hideModal() {
+            modal.classList.add('hidden');
+        }
+
+        // === FUNGSI APLIKASI ===
+        function populateStudentDropdown() {
+            const select = document.getElementById('namaSiswa');
+            DAFTAR_SISWA.sort().forEach(nama => {
+                const option = document.createElement('option');
+                option.value = nama;
+                option.textContent = nama;
+                select.appendChild(option);
+            });
+        }
+        
+        function showDaftarSiswa() {
+            let studentListHtml = '<ul class="list-disc list-inside space-y-2">';
+            DAFTAR_SISWA.sort().forEach(nama => {
+                studentListHtml += `<li class="text-gray-700">${nama}</li>`;
+            });
+            studentListHtml += '</ul>';
+            showModal('Daftar Siswa Bimbingan', studentListHtml);
+        }
+
+        function setDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            document.getElementById('tanggal').value = `${day}-${month}-${year}`;
+            document.getElementById('jam').value = `${hours}:${minutes}`;
+        }
+
+        // Event listener untuk form submission
+        document.getElementById('guidance-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showLoadingModal();
+            
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => data[key] = value);
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Penting untuk Apps Script Web App
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: new URLSearchParams(data) // Kirim sebagai form data
+            })
+            .then(res => {
+                 // Karena mode no-cors, kita tidak bisa membaca response.
+                 // Kita asumsikan sukses jika request tidak error.
+                 hideModal();
+                 showModal('Sukses', 'Data bimbingan berhasil dikirim!', 'success');
+                 this.reset();
+                 setDateTime();
+            })
+            .catch(error => {
+                hideModal();
+                showModal('Error', 'Gagal mengirim data. Silakan periksa koneksi internet Anda dan coba lagi. Error: ' + error.message, 'error');
+            });
+        });
+
+        // Fungsi untuk memuat data bimbingan
+        function loadDataBimbingan() {
+            showScreen('data-bimbingan-screen');
+            const container = document.getElementById('data-container');
+            document.getElementById('searchInput').value = ''; // Kosongkan pencarian
+            container.innerHTML = `<div class="flex justify-center py-10"><div class="loader"></div></div>`;
+
+            fetch(SCRIPT_URL)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.status === "sukses") {
+                        allBimbinganData = result.data.slice().reverse(); // Simpan data (terbaru di atas)
+                        displayDataBimbingan(allBimbinganData);
+                    } else {
+                        throw new Error(result.message || 'Gagal mengambil data.');
+                    }
+                })
+                .catch(error => {
+                    container.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg" role="alert">
+                        <strong class="font-bold">Error!</strong>
+                        <span class="block sm:inline">Tidak dapat memuat data. ${error.message}</span>
+                    </div>`;
+                });
+        }
+
+        // Fungsi untuk menyaring data berdasarkan input pencarian
+        function filterData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredData = allBimbinganData.filter(item => 
+                item['Nama Siswa'].toLowerCase().includes(searchTerm)
+            );
+            displayDataBimbingan(filteredData);
+        }
+        
+        function formatGoogleSheetDate(dateString) {
+            if (!dateString || typeof dateString !== 'string' || !dateString.includes('T')) return dateString;
+            try {
+                const date = new Date(dateString);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}-${month}-${year}`;
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        function formatGoogleSheetTime(timeString) {
+            if (!timeString || typeof timeString !== 'string' || !timeString.includes('T')) return timeString;
+            try {
+                const date = new Date(timeString);
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes}`;
+            } catch (e) {
+                return timeString;
+            }
+        }
+
+        function displayDataBimbingan(data) {
+            const container = document.getElementById('data-container');
+            if (!data || data.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500">Tidak ada data yang cocok dengan pencarian.</p>`;
+                return;
+            }
+
+            container.innerHTML = data.map(item => {
+                let statusBarColor, statusBadgeBgColor, statusBadgeTextColor;
+                const status = item['Status Bimbingan'];
+
+                if (status === 'Baik') {
+                    statusBarColor = 'bg-green-500';
+                    statusBadgeBgColor = 'bg-green-100';
+                    statusBadgeTextColor = 'text-green-800';
+                } else if (status === 'Perlu Perhatian') {
+                    statusBarColor = 'bg-yellow-400';
+                    statusBadgeBgColor = 'bg-yellow-100';
+                    statusBadgeTextColor = 'text-yellow-800';
+                } else { // Butuh Bantuan
+                    statusBarColor = 'bg-red-500';
+                    statusBadgeBgColor = 'bg-red-100';
+                    statusBadgeTextColor = 'text-red-800';
+                }
+
+                const formattedDate = formatGoogleSheetDate(item.Tanggal);
+                const formattedTime = formatGoogleSheetTime(item.Jam);
+                
+                return `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden flex border border-gray-200">
+                    <div class="w-2 ${statusBarColor}"></div>
+                    <div class="p-4 flex-grow min-w-0">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-lg text-gray-800 truncate" title="${item['Nama Siswa']}">${item['Nama Siswa']}</h3>
+                            <span class="text-xs text-gray-500 font-medium flex-shrink-0 ml-2 whitespace-nowrap">${formattedDate}, ${formattedTime}</span>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex">
+                                <span class="font-semibold text-gray-500 w-24 inline-block flex-shrink-0">Jenis:</span>
+                                <span class="text-gray-800">${item['Jenis Bimbingan']}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="font-semibold text-gray-500 w-24 inline-block flex-shrink-0">Status:</span>
+                                <span class="font-bold px-2 py-0.5 rounded-full text-xs ${statusBadgeTextColor} ${statusBadgeBgColor}">${status}</span>
+                            </div>
+                             <div class="flex">
+                                <span class="font-semibold text-gray-500 w-24 inline-block align-top flex-shrink-0">Catatan:</span>
+                                <span class="text-gray-800">${item.Catatan}</span>
+                            </div>
+                            <div class="flex">
+                                <span class="font-semibold text-gray-500 w-24 inline-block align-top flex-shrink-0">Tindak Lanjut:</span>
+                                <span class="text-gray-800">${item['Tindak Lanjut']}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // === INISIALISASI APLIKASI ===
+        document.addEventListener('DOMContentLoaded', () => {
+            populateStudentDropdown();
+            setDateTime();
+            // Setiap kali form ditampilkan, update tanggal dan jam
+            const formObserver = new MutationObserver(() => {
+                if(document.getElementById('bimbingan-form-screen').classList.contains('active')) {
+                    setDateTime();
+                }
+            });
+            formObserver.observe(document.getElementById('bimbingan-form-screen'), { attributes: true, attributeFilter: ['class'] });
+
+            // Kembali ke home saat tombol back browser ditekan
+            history.pushState(null, null, location.href);
+            window.onpopstate = function () {
+                history.go(1);
+                 if (!document.getElementById('welcome-screen').classList.contains('active')) {
+                    showScreen('home-screen');
+                }
+            };
+        });
+
+    </script>
+
+</body>
+</html>
+
